@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
+#include <stdio.h>
 
 #include "map.h"
 
@@ -156,6 +157,35 @@ void map_deinit_(map_base_t *m) {
 	m->initialized = false;
 }
 
+void map_print_(map_base_t *m) {
+
+    //struct map_node_t {
+    //	unsigned int hash;
+    //	void *value;
+    //	char *key;
+    //	map_node_t *next;
+    //};
+	if (m == NULL)
+		return;
+	if (!m->initialized)
+		return;
+	unsigned int i = m->nbuckets;
+	while (i--) {
+		map_node_t *node = m->buckets[i];
+		while (node) {
+            printf("Node\n");
+            printf("--------\n");
+            printf("hash: %u\n", node->hash);
+            printf("key: %s\n", node->key);
+            printf("value: %s\n",  *(char**) (node->value));
+            printf("\n");
+            
+			map_node_t *next = node->next;
+			node = next;
+		}
+	}
+}
+
 
 void *map_get_(map_base_t *m, const char *key) {
 	if (m == NULL || key == NULL)
@@ -189,6 +219,8 @@ int map_set_(map_base_t *m, const char *key, const void *value, int vsize) {
 	map_addnode(m, node);
 	m->nnodes++;
 	return 0;
+
+    
 	fail:
 	map_deletenode(node);
 	return -1;
